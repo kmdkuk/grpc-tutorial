@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package deepthought;
+
+option go_package = "github.com/kmdkuk/grpc-tutorial/go/deepthought";
+
+message BootRequest {}
+
+message BootResponse { string message = 1; }
+
+message InferRequest { string query = 1; }
+
+message InferResponse {
+  sint64 answer =
+      1; // sint は符号付きの整数で、負の数を効率よくエンコードしてくれます
+  repeated string description = 2; // repeated を付けると配列を渡せます
+}
+
+service Compute {
+  // Compute は Boot した瞬間に思考を始めるのでキャンセルするまでレスポンスを
+  // stream し続けます。
+  // リクエスト・レスポンスのメッセージは省略できません。
+  // `stream` がレスポンスについているので、この RPC
+  // はサーバーサイドストリーミングになります。
+  rpc Boot(BootRequest) returns (stream BootResponse);
+
+  // Infer は任意の質問に解答してくれます。
+  // 質問が Life, Universe, Everything に関する場合 750 万年、もとい 750 ミリ秒の計算を必要とします。
+  // この RPC はメッセージに `stream` がついていないので、Unary RPC です。
+  rpc Infer(InferRequest) returns (InferResponse);
+}

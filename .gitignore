@@ -29,4 +29,5 @@
 # Local History for Visual Studio Code
 .history/
 
-
+bin/
+include/

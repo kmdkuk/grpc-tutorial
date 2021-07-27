@@ -4,6 +4,7 @@ PROTOC_GEN_DOC_VERSION = 1.4.1
 PROTOC_GEN_GO_VERSION = 1.26.0
 PROTOC_GEN_GO_GRPC_VERSION = 1.1.0
 
+MODULE := $(shell awk '/^module / {print $$2}' go.mod)
 PWD := $(shell pwd)
 PROTOC = $(PWD)/bin/protoc
 PROTOC_GEN_DOC = $(PWD)/bin/protoc-gen-doc
@@ -21,10 +22,10 @@ go/deepthought/deepthought.pb.go: deepthought.proto $(PROTOC) $(PROTOC_GEN_GO)
 go/deepthought/deepthought_grpc.pb.go: deepthought.proto $(PROTOC) $(PROTOC_GEN_GO_GRPC)
 	$(RUN_PROTOC) --go-grpc_out=module=$(MODULE):. $<
 
-server: go/deepthought/deepthought_grpc.pb.go go/deepthought/deepthought.pb.go $(wildcard go/server/*.go)
+bin/server: go/deepthought/deepthought_grpc.pb.go go/deepthought/deepthought.pb.go $(wildcard go/server/*.go)
 	go build -o $@ ./go/server
 
-client: go/deepthought/deepthought_grpc.pb.go go/deepthought/deepthought.pb.go $(wildcard go/client/*.go)
+bin/client: go/deepthought/deepthought_grpc.pb.go go/deepthought/deepthought.pb.go $(wildcard go/client/*.go)
 	go build -o $@ ./go/client
 
 .PHONY: clean
